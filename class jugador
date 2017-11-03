@@ -1,0 +1,79 @@
+#ifndef JUGADOR_H
+#define JUGADOR_H
+#define reinas 4
+#include <iostream>
+#include "punto.h"
+
+using namespace std;
+
+class jugador
+{
+public:
+    jugador() {}
+    virtual ~jugador() {}
+    int valor_fila(int i){return _jugador[i].fila;}
+    int valor_columna(int i){return _jugador[i].columna;}
+    void modificar_reina(punto origen, punto destino);
+    virtual int valor_jugador()=0;
+protected:
+    struct est_jugador{
+        int fila,columna;
+    };
+    est_jugador _jugador[4];
+
+private:
+};
+
+void jugador::modificar_reina(punto origen, punto destino){
+    for (int i=0; i<reinas; i++){
+        if ((_jugador[i].fila == origen.fila()) && (_jugador[i].columna == origen.columna())){
+            _jugador[i].fila = destino.fila();
+            _jugador[i].columna = destino.columna();
+        }
+    }
+}
+
+class jugador_humano : public jugador
+{
+public:
+    jugador_humano(){
+        _jugador[0].fila=6;
+        _jugador[0].columna=0;
+        _jugador[1].fila=9;
+        _jugador[1].columna=3;
+        _jugador[2].fila=9;
+        _jugador[2].columna=6;
+        _jugador[3].fila=6;
+        _jugador[3].columna=9;
+
+    }
+
+    int valor_jugador(){
+        return 1;
+    }
+};
+
+
+
+class jugador_inteligente :public jugador
+{
+public:
+    jugador_inteligente(){
+        _jugador[0].fila=3;
+        _jugador[0].columna=0;
+        _jugador[1].fila=0;
+        _jugador[1].columna=3;
+        _jugador[2].fila=0;
+        _jugador[2].columna=6;
+        _jugador[3].fila=3;
+        _jugador[3].columna=9;
+
+    }
+    int valor_jugador(){
+        return -1;
+    }
+};
+
+
+
+#endif // JUGADOR_H
