@@ -1,0 +1,127 @@
+#include <iostream>j
+#include <stdlib.h>
+#include <list>
+#include "jugador.h"
+#include "tablero.h"
+#include "punto.h"
+#define limite 10
+#define reinas 4
+
+using namespace std;
+
+void imprimir_tablero(tablero partida){
+    for (int fila=0; fila<limite; fila++){
+            for(int columna=0; columna<limite; columna++){
+                cout << partida.devuelve_tablero(fila,columna)<< " ";
+            }
+            cout<<endl;
+        }
+}
+
+bool existe_posicion_reinas(jugador *_Jugador,punto casillero){
+        for (int i=0; i<reinas; i++){
+            if ((casillero.fila() == _Jugador->valor_fila(i)) && (casillero.columna() == _Jugador->valor_columna(i)))
+                return true;
+        }
+}
+
+int main()
+{
+    cout << "       d8888                                                                    " << endl;
+	cout << "      d88888                                                                    " << endl;
+	cout << "     d88P888                                                                    " << endl;
+	cout << "    d88P 888 88888b.d88b.   8888b.  88888888  .d88b.  88888b.   8888b.  .d8888b " << endl;
+	cout << "   d88P  888 888  888  88b      88b    d88P  d88  88b 888  88b      88b 88K     " << endl;
+	cout << "  d88P   888 888  888  888 .d888888   d88P   888  888 888  888 .d888888  Y8888b." << endl;
+	cout << " d8888888888 888  888  888 888  888  d88P    Y88..88P 888  888 888  888      X88" << endl;
+	cout << "d88P     888 888  888  888  Y888888 88888888   Y88P   888  888  Y888888  88888P " << endl;
+	cout << endl;
+	cout << endl;
+	system("pause");
+	system("cls");
+
+    tablero partida;
+    jugador *pHumano = new jugador_humano;
+    jugador *pMaquina = new jugador_inteligente;
+    jugador *aux = pHumano;
+    partida.carga_reinas(pHumano,pMaquina);
+    imprimir_tablero(partida);
+    int depth,fheuristica;
+    cout << "Ingrese profundidad de exploracion: <0 - 100>: ";
+    cin >> depth;
+    cout << "Ingrese heuristica (1 o 2)" <<endl;
+    cin >> fheuristica;
+    partida.heuristica(fheuristica);
+    system("cls");
+
+    while(!partida.tablero_juego_finalizado(aux)){
+       if(aux == pHumano){
+            imprimir_tablero(partida);
+            int fila,columna;
+            cout <<"<CO>"<<endl;
+            cout << "Fila: ";
+            cin >> fila;
+            cout << "Columna: ";
+            cin >> columna;
+            punto origen(fila,columna);
+            if(existe_posicion_reinas(pHumano,origen)){
+                cout << "<CD>"<<endl;
+                cout << "Fila: ";
+                cin >> fila;
+                cout << "Columna: ";
+                cin >> columna;
+                punto destino(fila,columna);
+                if (partida.jugada_valida(origen,destino)){
+                    cout << "<CF>"<<endl;
+                    cout << "Fila: ";
+                    cin >> fila;
+                    cout << "Columna: ";
+                    cin >> columna;
+                    punto flecha(fila,columna);
+                    if(partida.jugada_valida(destino,flecha)){
+                        pHumano->modificar_reina(origen,destino);
+                        partida.inserta_flecha(flecha);
+                        partida.limpia_tablero();
+                        partida.carga_flechas();
+                        partida.carga_reinas(pHumano,pMaquina);
+                        system("cls");
+                        aux = pMaquina;
+                    }else{
+                        cout << "Jugada invalida. Revise movimiento."<<endl;
+                    }
+                }else{
+                    cout << "Jugada invalida. Revise movimiento."<<endl;
+                }
+            }else{
+                cout << "No existe reina en esta posicion." << endl;
+                }
+        }else if (aux == pMaquina){
+                imprimir_tablero(partida);
+                int alpha = -1000;
+                int beta = 1000;
+                jugador *temp = pHumano;
+                int mejor = partida.negamax(partida,depth,alpha,beta,aux,temp);
+                system("cls");
+                partida.limpia_tablero();
+                punto origen(partida.origenf,partida.origenc);
+                punto destino(partida.destinof,partida.destinoc);
+                punto flecha(partida.flechaf,partida.flechac);
+                pMaquina->modificar_reina(origen,destino);
+                partida.inserta_flecha(flecha);
+                partida.carga_reinas(pHumano,pMaquina);
+                partida.carga_flechas();
+                imprimir_tablero(partida);
+                system("pause");
+                system("cls");
+                aux = pHumano;
+        }
+    }
+    //puntaje del ganador y quien es el ganador
+    /*if (partida.tablero_juego_finalizado(pHumano)){
+        cout<<"¡¡ EL GANADOR ES LA MAQUINA CON UN PUNTAJE DE : "<<partida.
+    }
+    if (partida.tablero_juego_finalizado(pMaquina)){
+        cout<<"¡¡ EL GANADOR ES EL HUMANO CON UN PUNTAJE DE : "<<partida.
+    }*/
+    return 0;
+}
