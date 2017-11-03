@@ -1,0 +1,24 @@
+#ifndef PUNTO_H
+#define PUNTO_H
+
+#include "jugador.h"
+
+class punto
+{
+public:
+    punto (int fila,int columna){
+        _punto.fila = fila;
+        _punto.columna = columna;
+    }
+
+    int fila(){return _punto.fila;}
+    int columna(){return _punto.columna;}
+
+private:
+    struct est_jugador{
+        int fila,columna;
+    };
+    est_jugador _punto;
+};
+
+#endif // PUNTO_H
